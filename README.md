@@ -122,13 +122,17 @@ class MyApplication : Application() {
 
 #### 1.4.1 **弹窗广告**
 
-SDK内部控制，后台可配置相关字段。
+屏幕息屏亮屏会触发中间广告弹窗，其他场景也可自行显示中间弹窗，在需要显示的地方调用：
+
+```kotlin
+AdSdk.showCenterPopAd(context:Context)
+```
 
 ---
 
 #### 1.4.2 **悬浮广告**
 
-SDK内部控制，后台可配置相关字段。
+SDK内部控制，后台可配置相关字段。(目前会在打开第三方视频应用的时候会触发显示)
 
 ---
 
@@ -143,6 +147,31 @@ AdSdk.bindAD(rlContainer, AdIds.AD_ID_VIEW) {
 ```
 
 ---
+
+
+
+### 1.4.3 **广告点击**
+
+在使用 `AdSdk.bindAD()` 方法时，确保为传入的父控件容器设置能够获取焦点的属性。可以通过如下方式在布局文件中设置父容器的焦点属性：
+
+```xml
+<RelativeLayout
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:id="@+id/rl_container"
+    android:layout_width="@dimen/qb_px_350"
+    android:layout_height="@dimen/qb_px_200"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="@dimen/qb_px_20"
+/>
+```
+
+这个配置确保了 `RelativeLayout` 容器能够在遥控模式下获取焦点，进而能够响应广告点击事件。
+
+---
+
+
+
 
 ### 1.5 **事件监听**
 
@@ -202,7 +231,7 @@ interface AdLoadCallback {
         // 广告关闭
     }
 
-    fun onAdClicked() {
+    fun onAdClicked(adId:String,adUrl:String?=null) {
         // 广告被点击
     }
 
