@@ -4,7 +4,7 @@ AD SDK Document
 
 ---
 
-## 1. **SDK 1.0.0 接入文档**
+## 1. **SDK 1.0.1 接入文档**
 
 ### 1.1 **介绍**
 
@@ -95,7 +95,7 @@ repositories {
 
 ```gradle
 dependencies {
-    implementation 'com.github.codeZeng95:ad-sdk:1.0.0-SNAPSHOP'  // JitPack 地址
+    implementation 'com.github.codeZeng95:ad-sdk:1.0.1-SNAPSHOP'  // JitPack 地址
 }
 ```
 
@@ -125,14 +125,17 @@ class MyApplication : Application() {
 屏幕息屏亮屏会触发中间广告弹窗，其他场景也可自行显示中间弹窗，在需要显示的地方调用：
 
 ```kotlin
-AdSdk.showCenterPopAd(context:Context)
+AdSdk.showCenterPopAd()
 ```
 
 ---
 
 #### 1.4.2 **悬浮广告**
 
-SDK内部控制，后台可配置相关字段。(目前会在打开第三方视频应用的时候会触发显示)
+```kotlin
+AdSdk.showFloatingAd()
+```
+
 
 ---
 
@@ -140,11 +143,25 @@ SDK内部控制，后台可配置相关字段。(目前会在打开第三方视�
 
 通过传入父控件容器和广告ID来绑定广告并展示：
 
+开屏广告示例:首次进入会先进行缓存，再次进入就会展示开屏广告：
+isLoadFromLocal = true 表示本地有缓存才会展示
+
 ```kotlin
-AdSdk.bindAD(rlContainer, AdIds.AD_ID_VIEW) {
-    //按需重写相应回调
-}
+AdSdk.bindAD {
+                adView = rlAdFull
+                adId = AdIds.AD_ID_SPLASH
+                isLoadFromLocal = true
+                onAdCallback {
+                    onAdCountdownFinished {
+                        
+                    }
+                    onAdDataFetchStart { Log.e("chihi_zengyue", "onCreate: \"数据拉取开始\"") }
+                    onAdDataFetchSuccess { Log.e("chihi_zengyue", "onCreate: \"数据拉取成功\"") }
+
+                }
+            }
 ```
+
 
 ---
 
@@ -178,14 +195,16 @@ AdSdk.bindAD(rlContainer, AdIds.AD_ID_VIEW) {
 SDK 中支持的事件，如何监听这些事件。例如：
 
 ```kotlin
-AdSdk.bindAD(rlContainer, AdIds.AD_ID_VIEW) {
-    onAdDataFetchStart {
-        //开始拉取广告数据
-    }
-    onAdDataFetchSuccess {
-        //广告数据获取成功
-    }
-}
+AdSdk.bindAD {
+                onAdCallback {
+                    onAdCountdownFinished {
+                       
+                    }
+                    onAdDataFetchStart { Log.e("chihi_zengyue", "onCreate: \"数据拉取开始\"") }
+                    onAdDataFetchSuccess { Log.e("chihi_zengyue", "onCreate: \"数据拉取成功\"") }
+
+                }
+            }
 ```
 
 ---
@@ -243,9 +262,33 @@ interface AdLoadCallback {
 
 ---
 
+### 1.5.1 **手动移除悬浮窗(提前关闭广告时使用)**
+
+```kotlin
+AdSdk.removeFloatingAd()
+```
+
+---
+
+### 1.5.1 **广告ID**
+
+悬浮窗或者传入外部父viewgroup的方式都需要一个广告ID，对应不同的广告位：悬浮窗和中间弹窗默认已经自动传了一个默认的广告ID了，下面是目前用到的广告ID：
+```kotlin
+object AdIds {
+    const val AD_ID_POPUP = "popup_ad_id"
+    const val AD_ID_ENTER_HOME = "enter_home_ad_id"
+    const val AD_ID_ITEM_FOCUSED = "item_focused_home_ad_id"
+    const val AD_ID_LIST = "list_ad_id"
+    const val AD_ID_VIDEO_LAUNCH = "video_launch_ad_id"
+    const val AD_ID_SPLASH = "splash_ad_id"
+}
+```
+
+---
+
 ### 1.6 **配置选项**
 
-所有广告配置的选项，例如广告展示的频率、显示时长等。每个选项的默认值和如何修改配置都可以通过后端接口配置。
+所有广告配置的选项，例如广告展示的频率、显示时长，悬浮窗显示位置等。每个选项的默认值和如何修改配置都可以通过后端接口配置。
 
 ---
 
