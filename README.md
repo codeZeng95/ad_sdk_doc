@@ -329,7 +329,8 @@ override fun onTerminate() {
 ## 2. **附录**
 
 - **版本历史**：  
-  - 版本 1.0.0-SNAPSHOP：首次发布  
+  - 版本 1.0.0-SNAPSHOP：首次发布
+  - - 版本 1.0.1-SNAPSHOP：优化逻辑
 
 - **API 文档**：  
   - API 参考文档请访问 [SDK API 文档链接]
@@ -346,14 +347,23 @@ class MainActivity : AppCompatActivity() {
         
         val rlContainer = findViewById<RelativeLayout>(R.id.rl_container)
         
-        AdSdk.bindAD(rlContainer, AdIds.AD_ID_VIEW) {
-            onAdDataFetchStart {
-                //开始拉取广告数据
+        AdSdk.bindAD {
+                adView = rlAdFull
+                adId = AdIds.AD_ID_SPLASH
+                isLoadFromLocal = true
+                onAdCallback {
+                    onAdCountdownFinished {
+                        AdSdk.bindAD {
+                            adView = rlContainer
+                            adId = AdIds.AD_ID_POPUP
+                        }
+                        rlAdFull.isVisible = false
+                    }
+                    onAdDataFetchStart { Log.e("chihi_zengyue", "onCreate: \"数据拉取开始\"") }
+                    onAdDataFetchSuccess { Log.e("chihi_zengyue", "onCreate: \"数据拉取成功\"") }
+
+                }
             }
-            onAdDataFetchSuccess {
-                //广告数据获取成功
-            }
-        }
     }
 }
 ```
